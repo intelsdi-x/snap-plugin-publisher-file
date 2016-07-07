@@ -37,7 +37,7 @@ import (
 
 const (
 	name       = "file"
-	version    = 3
+	version    = 1
 	pluginType = plugin.PublisherPluginType
 )
 
