@@ -45,15 +45,202 @@ $ make
 This builds the plugin in `./build/rootfs/`
 
 ### Configuration and Usage
-* Set up the [snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
+* Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
 * Ensure `$SNAP_PATH` is exported  
 `export SNAP_PATH=$GOPATH/src/github.com/intelsdi-x/snap/build`
 
 ## Documentation
-<< @TODO
+To use this plugin you have to specify a config with the location of the file you want to write to:
+
+```
+# JSON
+"config": {
+    "file": "/tmp/snap_published_file.log"
+}
+
+# YAML
+config: 
+    file: "/tmp/snap_published_mock_file.log"
+
+```
+
+The plugin will write out all metrics serialized as JSON to the specified file. An example of this output is below:
+
+```
+[
+    {
+        "namespace": [
+            {
+                "Value": "intel",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "mock",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "foo",
+                "Description": "",
+                "Name": ""
+            }
+        ],
+        "last_advertised_time": "2016-07-13T10:39:47.922391602-07:00",
+        "version": 0,
+        "config": {
+            "name": "root",
+            "password": "secret"
+        },
+        "data": 88,
+        "tags": {
+            "plugin_running_on": "testhost.local"
+        },
+        "Unit_": "",
+        "description": "",
+        "timestamp": "2016-07-13T10:40:27.183090674-07:00"
+    },
+    {
+        "namespace": [
+            {
+                "Value": "intel",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "mock",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "host0",
+                "Description": "name of the host",
+                "Name": "host"
+            },
+            {
+                "Value": "baz",
+                "Description": "",
+                "Name": ""
+            }
+        ],
+        "last_advertised_time": "0001-01-01T00:00:00Z",
+        "version": 0,
+        "config": null,
+        "data": 66,
+        "tags": {
+            "plugin_running_on": "testhost.local"
+        },
+        "Unit_": "",
+        "description": "",
+        "timestamp": "2016-07-13T10:40:27.183093127-07:00"
+    },
+    {
+        "namespace": [
+            {
+                "Value": "intel",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "mock",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "host1",
+                "Description": "name of the host",
+                "Name": "host"
+            },
+            {
+                "Value": "baz",
+                "Description": "",
+                "Name": ""
+            }
+        ],
+        "last_advertised_time": "0001-01-01T00:00:00Z",
+        "version": 0,
+        "config": null,
+        "data": 69,
+        "tags": {
+            "plugin_running_on": "testhost.local"
+        },
+        "Unit_": "",
+        "description": "",
+        "timestamp": "2016-07-13T10:40:27.183094592-07:00"
+    },
+    {
+        "namespace": [
+            {
+                "Value": "intel",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "mock",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "host2",
+                "Description": "name of the host",
+                "Name": "host"
+            },
+            {
+                "Value": "baz",
+                "Description": "",
+                "Name": ""
+            }
+        ],
+        "last_advertised_time": "0001-01-01T00:00:00Z",
+        "version": 0,
+        "config": null,
+        "data": 80,
+        "tags": {
+            "plugin_running_on": "testhost.local"
+        },
+        "Unit_": "",
+        "description": "",
+        "timestamp": "2016-07-13T10:40:27.183096041-07:00"
+    },
+    {
+        "namespace": [
+            {
+                "Value": "intel",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "mock",
+                "Description": "",
+                "Name": ""
+            },
+            {
+                "Value": "host3",
+                "Description": "name of the host",
+                "Name": "host"
+            },
+            {
+                "Value": "baz",
+                "Description": "",
+                "Name": ""
+            }
+        ],
+        "last_advertised_time": "0001-01-01T00:00:00Z",
+        "version": 0,
+        "config": null,
+        "data": 67,
+        "tags": {
+            "plugin_running_on": "testhost.local"
+        },
+        "Unit_": "",
+        "description": "",
+        "timestamp": "2016-07-13T10:40:27.183096841-07:00"
+    }
+]
+```
 
 ### Examples
-<< @TODO
+Full task configs using the mock and psutil plugins are available in [examples](examples)
 
 ### Roadmap
 
@@ -62,7 +249,7 @@ There isn't a current roadmap for this plugin. However, if additional output typ
 If you have a feature request, please add it as an [issue](https://github.com/intelsdi-x/snap-plugin-publisher-file/issues/new) and/or submit a [pull request](https://github.com/intelsdi-x/snap-plugin-publisher-file/pulls).
 
 ## Community Support
-This repository is one of **many** plugins in **snap**, a powerful telemetry framework. See the full project at http://github.com/intelsdi-x/snap To reach out to other users, head to the [main framework](https://github.com/intelsdi-x/snap#community-support)
+This repository is one of **many** plugins in **Snap**, a powerful telemetry framework. See the full project at http://github.com/intelsdi-x/snap To reach out to other users, head to the [main framework](https://github.com/intelsdi-x/snap#community-support)
 
 ## Contributing
 We love contributions! 
