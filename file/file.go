@@ -26,7 +26,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -36,12 +36,24 @@ import (
 )
 
 const (
-	name       = "file"
-	version    = 1
-	pluginType = plugin.PublisherPluginType
+	PluginName    = "file"
+	PluginVersion = 2
+	PluginType    = plugin.PublisherPluginType
 )
 
 type filePublisher struct {
+}
+
+type MetricToPublish struct {
+	// The timestamp from when the metric was created.
+	Timestamp time.Time         `json:"timestamp"`
+	Namespace string            `json:"namespace"`
+	Data      interface{}       `json:"data"`
+	Unit      string            `json:"unit"`
+	Tags      map[string]string `json:"tags"`
+	Version_  int               `json:"version"`
+	// Last advertised time is the last time the snap agent was told about a metric.
+	LastAdvertisedTime time.Time `json:"last_advertised_time"`
 }
 
 //NewFilePublisher returns an instance of filePublisher
@@ -52,21 +64,20 @@ func NewFilePublisher() *filePublisher {
 func (f *filePublisher) Publish(contentType string, content []byte, config map[string]ctypes.ConfigValue) error {
 	logger := log.New()
 	logger.Println("Publishing started")
-	var metrics []plugin.MetricType
+	var mts []plugin.MetricType
 
 	switch contentType {
 	case plugin.SnapGOBContentType:
 		dec := gob.NewDecoder(bytes.NewBuffer(content))
-		if err := dec.Decode(&metrics); err != nil {
+		if err := dec.Decode(&mts); err != nil {
 			logger.Printf("Error decoding: error=%v content=%v", err, content)
-			return err
+			return fmt.Errorf("Error decoding %v", err)
 		}
 	default:
-		logger.Printf("Error unknown content type '%v'", contentType)
 		return fmt.Errorf("Unknown content type '%s'", contentType)
 	}
 
-	logger.Printf("publishing %v metrics to %v", len(metrics), config)
+	logger.Printf("publishing %v metrics to %v", len(mts), config)
 	file, err := os.OpenFile(config["file"].(ctypes.ConfigValueStr).Value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
@@ -74,10 +85,14 @@ func (f *filePublisher) Publish(contentType string, content []byte, config map[s
 		return err
 	}
 	w := bufio.NewWriter(file)
+
+	// format metrics types to metrics to be published
+	metrics := formatMetricTypes(mts)
 	jsonOut, err := json.Marshal(metrics)
 	if err != nil {
 		return fmt.Errorf("Error while marshalling metrics to JSON: %v", err)
 	}
+
 	w.Write(jsonOut)
 	w.WriteString("\n")
 	w.Flush()
@@ -85,21 +100,9 @@ func (f *filePublisher) Publish(contentType string, content []byte, config map[s
 	return nil
 }
 
-// formatMetricTagsAsString returns metric's tags as a string in the following format tagKey:tagValue where the next tags are separated by semicolon
-func formatMetricTagsAsString(metricTags map[string]string) string {
-	var tags string
-	for tag, value := range metricTags {
-		tags += fmt.Sprintf("%s:%s; ", tag, value)
-	}
-	// trim the last semicolon
-	tags = strings.TrimSuffix(tags, "; ")
-
-	return "tags[" + tags + "]"
-}
-
 //Meta returns metadata about the plugin
 func Meta() *plugin.PluginMeta {
-	return plugin.NewPluginMeta(name, version, pluginType, []string{plugin.SnapGOBContentType}, []string{plugin.SnapGOBContentType})
+	return plugin.NewPluginMeta(PluginName, PluginVersion, PluginType, []string{plugin.SnapGOBContentType}, []string{plugin.SnapGOBContentType})
 }
 
 func (f *filePublisher) GetConfigPolicy() (*cpolicy.ConfigPolicy, error) {
@@ -113,6 +116,24 @@ func (f *filePublisher) GetConfigPolicy() (*cpolicy.ConfigPolicy, error) {
 	config.Add(r1)
 	cp.Add([]string{""}, config)
 	return cp, nil
+}
+
+// formatMetricTypes returns metrics in format to be publish as a JSON based on incoming metrics types;
+// i.a. namespace is formatted as a single string
+func formatMetricTypes(mts []plugin.MetricType) []MetricToPublish {
+	var metrics []MetricToPublish
+	for _, mt := range mts {
+		metrics = append(metrics, MetricToPublish{
+			Timestamp:          mt.Timestamp(),
+			Namespace:          mt.Namespace().String(),
+			Data:               mt.Data(),
+			Unit:               mt.Unit(),
+			Tags:               mt.Tags(),
+			Version_:           mt.Version(),
+			LastAdvertisedTime: mt.LastAdvertisedTime(),
+		})
+	}
+	return metrics
 }
 
 func handleErr(e error) {

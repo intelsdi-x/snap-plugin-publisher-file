@@ -25,37 +25,84 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/intelsdi-x/snap/control/plugin"
+	"github.com/intelsdi-x/snap/control/plugin/cpolicy"
 	"github.com/intelsdi-x/snap/core"
 	"github.com/intelsdi-x/snap/core/ctypes"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestFilePublish(t *testing.T) {
-	var buf bytes.Buffer
-	metrics := []plugin.MetricType{
-		*plugin.NewMetricType(core.NewNamespace("foo"), time.Now(), nil, "", 99),
-	}
-	config := make(map[string]ctypes.ConfigValue)
-	enc := gob.NewEncoder(&buf)
-	enc.Encode(metrics)
+var mockMts = []plugin.MetricType{
+	*plugin.NewMetricType(core.NewNamespace("foo"), time.Now(), nil, "", 99),
+}
 
-	Convey("TestFilePublish", t, func() {
-		config["file"] = ctypes.ConfigValueStr{Value: "/tmp/pub.out"}
-		fp := NewFilePublisher()
-		So(fp, ShouldNotBeNil)
-		err := fp.Publish("", buf.Bytes(), config)
-		So(err, ShouldResemble, errors.New("Unknown content type ''"))
-		err = fp.Publish(plugin.SnapGOBContentType, buf.Bytes(), config)
-		So(err, ShouldBeNil)
-		_, err = os.Stat(config["file"].(ctypes.ConfigValueStr).Value)
-		So(err, ShouldBeNil)
+func TestMetaData(t *testing.T) {
+	Convey("Meta returns proper metadata", t, func() {
 		meta := Meta()
 		So(meta, ShouldNotBeNil)
+		So(meta.Name, ShouldResemble, PluginName)
+		So(meta.Version, ShouldResemble, PluginVersion)
+		So(meta.Type, ShouldResemble, PluginType)
+	})
+}
+
+func TestFilePublisher(t *testing.T) {
+	Convey("Create a File Publisher", t, func() {
+		fp := NewFilePublisher()
+		Convey("so file publisher should not be nil", func() {
+			So(fp, ShouldNotBeNil)
+		})
+		Convey("so file publisher should be of publisher plugin type", func() {
+			So(fp, ShouldHaveSameTypeAs, &filePublisher{})
+		})
+
+		configPolicy, err := fp.GetConfigPolicy()
+
+		Convey("Test GetConfigPolicy()", func() {
+			Convey("So config policy should not be nil", func() {
+				So(configPolicy, ShouldNotBeNil)
+			})
+			Convey("So getting a config policy should not return an error", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("So config policy should be a cpolicy.ConfigPolicy type", func() {
+				So(configPolicy, ShouldHaveSameTypeAs, &cpolicy.ConfigPolicy{})
+			})
+		})
+		Convey("Publish content to file", func() {
+			var buf bytes.Buffer
+			enc := gob.NewEncoder(&buf)
+			enc.Encode(mockMts)
+
+			config := make(map[string]ctypes.ConfigValue)
+			config["file"] = ctypes.ConfigValueStr{Value: "/tmp/pub.out"}
+
+			Convey("invalid contentType", func() {
+				err := fp.Publish("", buf.Bytes(), config)
+				So(err, ShouldResemble, errors.New("Unknown content type ''"))
+			})
+			Convey("empty content", func() {
+				err = fp.Publish(plugin.SnapGOBContentType, []byte{}, config)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("successful publishing", func() {
+				err = fp.Publish(plugin.SnapGOBContentType, buf.Bytes(), config)
+				So(err, ShouldBeNil)
+			})
+		})
+	})
+}
+
+func TestFormatMetricTypes(t *testing.T) {
+	Convey("FormatMetricTypes returns metrics to publish", t, func() {
+		metrics := formatMetricTypes(mockMts)
+		So(metrics, ShouldNotBeEmpty)
+		// formatted metric has namespace represented as a single string
+		So(metrics[0].Namespace, ShouldEqual, mockMts[0].Namespace().String())
 	})
 }
