@@ -22,4 +22,4 @@
             - 
               plugin_name: "file"
               config: 
-                file: "/tmp/snap_published_mock_file.log"
+                file: "/tmp/snap_published_mock_file.json"
