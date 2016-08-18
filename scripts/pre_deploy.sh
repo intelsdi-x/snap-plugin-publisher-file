@@ -28,20 +28,14 @@ __proj_dir="$(dirname "$__dir")"
 . "${__dir}/common.sh"
 
 plugin_name=${__proj_dir##*/}
-build_dir="${__proj_dir}/build"
-go_build=(go build -ldflags "-w")
+build_path="${SNAP_PATH:-"${__proj_dir}/build"}"
+git_sha=$(git log --pretty=format:"%H" -1)
+git_path="${build_path}/${TRAVIS_BRANCH}/${git_sha}"
+latest_path="${build_path}/${TRAVIS_BRANCH}/latest"
 
-_info "project path: ${__proj_dir}"
-_info "plugin name: ${plugin_name}"
+mkdir -p "${git_path}"
+mkdir -p "${latest_path}"
 
-# Disable CGO for builds
-export CGO_ENABLED=0
-
-# rebuild binaries:
-_debug "removing: ${build_dir:?}/*"
-rm -rf "${build_dir:?}/"*
-mkdir -p ${build_dir}
-
-_info "building plugin: ${plugin_name}"
-GOOS=linux "${go_build[@]}" -o "${build_dir}/${plugin_name}-linux" . || exit 1
-GOOS=darwin "${go_build[@]}" -o "${build_dir}/${plugin_name}-darwin" . || exit 1
+_info "copying Linux plugin binaries"
+cp "${build_path}/${plugin_name}"* "${git_path}"
+mv "${build_path}/${plugin_name}"* "${latest_path}"
