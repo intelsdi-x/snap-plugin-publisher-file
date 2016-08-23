@@ -47,7 +47,7 @@ _info "copying plugin binaries to ${latest_path}"
 cp "${build_path}/${plugin_name}"* "${latest_path}"
 
 _info "moving plugin binaries to ${release_path}"
-mv "${release_path}/${plugin_name}"* "${release_path}"
+mv "${build_path}/${plugin_name}"* "${release_path}"
 
 find "${build_path}"
 find "${release_path}"
