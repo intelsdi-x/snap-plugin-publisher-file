@@ -32,16 +32,22 @@ build_path="${SNAP_PATH:-"${__proj_dir}/build"}"
 git_sha=$(git log --pretty=format:"%H" -1)
 git_path="${build_path}/${TRAVIS_BRANCH}/${git_sha}"
 latest_path="${build_path}/${TRAVIS_BRANCH}/latest"
+release_path="${SNAP_PATH:-"${__proj_dir}/release"}"
 
 mkdir -p "${git_path}"
 mkdir -p "${latest_path}"
+mkdir -p "${release_path}"
 
 _info "build_path: ${build_path}"
 find "${build_path}"
 
 _info "copying plugin binaries to ${git_path}"
-cp "${build_path}/${plugin_name}"* "${git_path}" || true
+cp "${build_path}/${plugin_name}"* "${git_path}"
 _info "copying plugin binaries to ${latest_path}"
-mv "${build_path}/${plugin_name}"* "${latest_path}" || true
+cp "${build_path}/${plugin_name}"* "${latest_path}"
+
+_info "moving plugin binaries to ${release_path}"
+mv "${release_path}/${plugin_name}"* "${release_path}"
 
 find "${build_path}"
+find "${release_path}"
