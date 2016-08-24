@@ -34,19 +34,33 @@ deploy:
   bucket: snap.ci.snap-telemetry.io
   region: us-west-2
   skip_cleanup: true
-  local-dir: build
+  local-dir: s3
   upload-dir: plugins/snap-plugin-collector-file
   acl: public_read
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
     branch: master
     condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.6.3"
+- provider: s3
+  access_key_id: AKIAINMB43VSSPFZISAA
+  secret_access_key:
+    secure: PTsYNpPnWQIQSkHcmS8BzTzug/HpkN6y2BMrBjy758jEkHFK7PMld0O3EWg1PZJmg7tq+yByChkBiEvcG9QWKPMP6CVbOT95ByJRp7vGi+Rta1SxMbcht/JtiCitqmf7GUubWBmuoipbf703+4HT6h4GxMXsvKKAWIjQrE4g8PGykFJbn+kpCsurNUOYqWgLXgeqequkWfZghs8SXXoWLAh7rwzosSm5sdSOp8xATtJzudmwGIqs44FFJEYWDBwwX+d2cCIHC0MwOBWSWqnXpbMxH1zvcUu6tJY5p6hvDaxGQ4LdDieIDeIjsTS3zmj3tEsWUlL2+rIo3x9HD+ZumVZE15rGGksaKxyTeeQZOHGOP8lYIgg8KSC9gLv6r9S2pTvec/sI82euKe4wUXimNJri2FkOx4Agt02/TYpihzJH9hLm1YqSBKYXOrl1Jd/rj7BuMPa4JJeBXswYCsscU7zpdc76gWoA+51ZM3tZ+i5LrxwySPcnI1rnfoP34RaBx0mk2ong3UHbf12M5Nwp5rIO542b0dE3nIPWln2BjXWbcKTYZhipjOFBoHiLTzQHW93d5s7+iKQNfNbSbReBT0qFq2S/pHwKBrkeVoHqXWD8p17MrhkfgT008MhDFp2C7U+HGzfx7SBH0AjKqb8XRjXOqEq9soCQjK8ijQ5a6Y4=
+  bucket: snap.ci.snap-telemetry.io
+  region: us-west-2
+  skip_cleanup: true
+  local-dir: s3
+  upload-dir: plugins/snap-plugin-collector-file
+  acl: public_read
+  on:
+    repo: intelsdi-x/snap-plugin-publisher-file
+    tags: true
+    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.6.3"
 - provider: releases
   api_key:
     secure: qgJ93IYfJUzPWlsuhvWxczl2H8yyXUsM5rJ6YrNaKUTtwy2bvXg65zEvunEPvs+VbkimlODf42BFyTcb0GqgTx8N13wk8m1K0VFGirDK0KjugQF2zAs61lV1mzkUnTWipVm4a23bPdTt5vncj2kf70RqXBQ3eK75ttnpin47R858H8rl++4JC/wd3vNPZYX2OzahlGmHrsWi1drRGvhngevMqckz2MyUBwCMxhiWFlQSAfCmcD61+zuQ+2RmHN0omJCf59SBiBv+7QaqoVgN2X5EA4HD5hu6J1HpUuMhkWViIbSGhUCqoaH3Cgj2HzWy9WFRW2B18vT+FV5NPgHDZlYwgCCBHBHzp+JImiU1SgLoQJMCwBL8KiOUul7ZjYJLZABFQ/Z/1xhZp5jcy6+CtODGm/xuxNGbo0OE8eMdEs5StVT1wD0EPNAW0c22veksOywr0fW2TITJUfAF+BThRZQF9WGo97+d/8/rSZmhfQe0nfk5L/8P/OSHQn+2b685j5V5CfVqIW7Kq35pDVnwwedyhsjDs+1udQTPjqyT5/PuBjHtB/Fc3xVlDnKrrxn5Igh0o0uCeyLzFkDyjIB2Bn9u7/vBw4QZ5lTKmTaC4TGcwrdpDYDFaxNB0WZFS59NkgitZLHrrqW4XJimvqg7dKatoN3wpzft/csdyNh5tqE=
   file:
-    - release/snap-plugin-publisher-file-darwin
-    - release/snap-plugin-publisher-file-linux
+    - release/snap-plugin-publisher-file_darwin_amd64
+    - release/snap-plugin-publisher-file_linux_amd64
   skip_cleanup: true
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
