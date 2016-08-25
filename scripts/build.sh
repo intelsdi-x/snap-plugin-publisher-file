@@ -40,13 +40,14 @@ export CGO_ENABLED=0
 # rebuild binaries:
 _debug "removing: ${build_dir:?}/*"
 rm -rf "${build_dir:?}/"*
-mkdir -p "${build_dir}/linux/amd64"
-mkdir -p "${build_dir}/darwin/amd64"
+mkdir -p "${build_dir}/linux/x86_64"
+mkdir -p "${build_dir}/darwin/x86_64"
+
+arch="x86_64"
 
 _info "building plugin: ${plugin_name}"
-GOOS=linux
-GOARCH=amd64
-"${go_build[@]}" -o "${build_dir}/${GOOS}/${GOARCH}/${plugin_name}" . || exit 1
-GOOS=darwin
-GOARCH=amd64
-"${go_build[@]}" -o "${build_dir}/${GOOS}/${GOARCH}/${plugin_name}" . || exit 1
+export GOOS=linux
+"${go_build[@]}" -o "${build_dir}/${GOOS}/${arch}/${plugin_name}" . || exit 1
+
+export GOOS=darwin
+"${go_build[@]}" -o "${build_dir}/${GOOS}/${arch}/${plugin_name}" . || exit 1
