@@ -27,27 +27,48 @@ __proj_dir="$(dirname "$__dir")"
 # shellcheck source=scripts/common.sh
 . "${__dir}/common.sh"
 
-plugin_name=${__proj_dir##*/}
 build_path="${SNAP_PATH:-"${__proj_dir}/build"}"
-git_sha=$(git log --pretty=format:"%H" -1)
-git_path="${build_path}/${TRAVIS_BRANCH}/${git_sha}"
-latest_path="${build_path}/${TRAVIS_BRANCH}/latest"
-release_path="${SNAP_PATH:-"${__proj_dir}/release"}"
+_info "build_path: ${build_path}"
+_debug "$(find "${build_path}")"
 
-mkdir -p "${git_path}"
-mkdir -p "${latest_path}"
+git_sha=$(git log --pretty=format:"%H" -1)
+s3_path="${SNAP_PATH:-"${__proj_dir}/s3"}"
+
+set +u
+if [ -z "$TRAVIS_TAG" ]; then
+  set -u
+  git_path="${s3_path}/${TRAVIS_BRANCH}/${git_sha}"
+  latest_path="${s3_path}/${TRAVIS_BRANCH}/latest"
+  mkdir -p "${git_path}"
+  mkdir -p "${latest_path}"
+
+  _info "copying plugin binaries to ${git_path}"
+  cp -rp "${build_path}/" "${git_path}"
+  _info "copying plugin binaries to ${latest_path}"
+  cp -rp "${build_path}/" "${latest_path}"
+else
+  set -u
+  tag_path="${s3_path}/${TRAVIS_TAG}"
+  mkdir -p "${tag_path}"
+
+  _info "copying plugin binaries to ${tag_path}"
+  cp -rp "${build_path}/" "${tag_path}"
+fi
+
+release_path="${SNAP_PATH:-"${__proj_dir}/release"}"
 mkdir -p "${release_path}"
 
-_info "build_path: ${build_path}"
-find "${build_path}"
-
-_info "copying plugin binaries to ${git_path}"
-cp "${build_path}/${plugin_name}"* "${git_path}"
-_info "copying plugin binaries to ${latest_path}"
-cp "${build_path}/${plugin_name}"* "${latest_path}"
-
 _info "moving plugin binaries to ${release_path}"
-mv "${build_path}/${plugin_name}"* "${release_path}"
 
-find "${build_path}"
-find "${release_path}"
+for file in "${build_path}"/**/*/snap-plugin-* ; do
+  filename="${file##*/}"
+  parent="${file%/*}"
+  arch="${parent##*/}"
+  parent="${parent%/*}"
+  os="${parent##*/}"
+  cp "${file}" "${release_path}/${filename}_${os}_${arch}"
+done
+
+_debug "$(find "${build_path}")"
+_debug "$(find "${s3_path}")"
+_debug "$(find "${release_path}")"
