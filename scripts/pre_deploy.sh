@@ -43,16 +43,16 @@ if [ -z "$TRAVIS_TAG" ]; then
   mkdir -p "${latest_path}"
 
   _info "copying plugin binaries to ${git_path}"
-  cp -rp "${build_path}/" "${git_path}"
+  cp -rp "${build_path}/"* "${git_path}"
   _info "copying plugin binaries to ${latest_path}"
-  cp -rp "${build_path}/" "${latest_path}"
+  cp -rp "${build_path}/"* "${latest_path}"
 else
   set -u
   tag_path="${s3_path}/${TRAVIS_TAG}"
   mkdir -p "${tag_path}"
 
   _info "copying plugin binaries to ${tag_path}"
-  cp -rp "${build_path}/" "${tag_path}"
+  cp -rp "${build_path}/"* "${tag_path}"
 fi
 
 release_path="${SNAP_PATH:-"${__proj_dir}/release"}"
