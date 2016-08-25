@@ -27,12 +27,13 @@ __proj_dir="$(dirname "$__dir")"
 # shellcheck source=scripts/common.sh
 . "${__dir}/common.sh"
 
-build_path="${SNAP_PATH:-"${__proj_dir}/build"}"
+build_path="${__proj_dir}/build"
 _info "build_path: ${build_path}"
 _debug "$(find "${build_path}")"
 
+plugin_name="${__proj_dir##*/}"
 git_sha=$(git log --pretty=format:"%H" -1)
-s3_path="${SNAP_PATH:-"${__proj_dir}/s3"}"
+s3_path="${__proj_dir}/s3/${plugin_name}"
 
 set +u
 if [ -z "$TRAVIS_TAG" ]; then

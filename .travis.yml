@@ -35,7 +35,7 @@ deploy:
   region: us-west-2
   skip_cleanup: true
   local-dir: s3
-  upload-dir: plugins/snap-plugin-collector-file
+  upload-dir: plugins/
   acl: public_read
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
@@ -49,7 +49,7 @@ deploy:
   region: us-west-2
   skip_cleanup: true
   local-dir: s3
-  upload-dir: plugins/snap-plugin-collector-file
+  upload-dir: plugins/
   acl: public_read
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
