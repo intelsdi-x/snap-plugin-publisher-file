@@ -37,7 +37,7 @@ import (
 
 const (
 	PluginName    = "file"
-	PluginVersion = 2
+	PluginVersion = 3
 	PluginType    = plugin.PublisherPluginType
 )
 
