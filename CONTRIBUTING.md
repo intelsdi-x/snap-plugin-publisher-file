@@ -1,4 +1,4 @@
-# snap publisher file plugin
+# snap plugin publisher file
 
 1. [Contributing Code](#contributing-code)
 2. [Contributing Examples](#contributing-examples)
@@ -12,16 +12,16 @@ This repository has dedicated developers from Intel working on updates. The most
 
 * Whether your contribution is for a bug fix or a feature request, **create an [Issue](https://github.com/intelsdi-x/snap-plugin-publisher-file/issues)** and let us know what you are thinking.
 * **For bugs**, if you have already found a fix, feel free to submit a Pull Request referencing the Issue you created.
-* **For feature requests**, we want to improve upon the library incrementally which means small changes at a time. In order ensure your PR can be reviewed in a timely manner, please keep PRs small, e.g. <10 files and <500 lines changed. If you think this is unrealistic, then mention that within the issue and we can discuss it.
+* **For feature requests**, we want to improve upon the library incrementally which means small changes at a time. In order to ensure your PR can be reviewed in a timely manner, please keep PRs small, e.g. <10 files and <500 lines changed. If you think this is unrealistic, then mention that within the issue and we can discuss it.
 
 Once you're ready to contribute code back to this repo, start with these steps:
 
 * Fork the appropriate sub-projects that are affected by your change.
 * Clone the fork to `$GOPATH/src/github.com/intelsdi-x/`:
 
-	```
-	$ git clone https://github.com/<yourGithubID>/<project>.git
-	```
+    ```
+$ git clone https://github.com/<yourGithubID>/<project>.git
+    ```
 * Create a topic branch for your change and checkout that branch:
 
     ```
@@ -38,10 +38,10 @@ If you have questions feel free to contact the [maintainers](https://github.com/
 ## Contributing Examples
 The most immediately helpful way you can benefit this project is by cloning the repository, adding some further examples and submitting a pull request.
 
-Have you written a blog post about how you use [snap](http://github.com/intelsdi-x/snap) and/or this plugin? Send it to us [on Gitter](https://gitter.im/intelsdi-x/snap)!
+Have you written a blog post about how you use [Snap](http://github.com/intelsdi-x/snap) and/or this plugin? Send it to us [on slack](https://intelsdi-x.slack.com/)!
 
 ## Contribute Elsewhere
-This repository is one of **many** plugins in **snap**, a powerful telemetry framework. See the full project at http://github.com/intelsdi-x/snap
+This repository is one of **many** plugins in **Snap**, a powerful telemetry framework. See the full project at http://github.com/intelsdi-x/snap
 
 ## Thank You
 And **thank you!** Your contribution, through code and participation, is incredibly important to us.
