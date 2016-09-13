@@ -54,7 +54,7 @@ To use this plugin you have to specify a config with the location of the file yo
 ```
 # JSON
 "config": {
-    "file": "/tmp/snap_published_file.json"
+    "file": "/tmp/snap_published_mock_file.json"
 }
 
 # YAML
@@ -115,7 +115,7 @@ The plugin will write out all metrics serialized as JSON to the specified file. 
 ```
 
 ### Examples
-See full task manifests using the mock and psutil plugins which are available in [examples](examples)  
+See full task manifests using the mock and psutil plugins which are available in [examples/tasks](examples/tasks)  
 
 
 Example of running mock collector plugin, passthru processor plugin, and writing data as a JSON to file:
@@ -169,7 +169,7 @@ See available metrics for your system:
 $ $SNAP_PATH/bin/snapctl metric list
 ```
 
-Create a task manifest to use File publisher plugin (see [exemplary task manifest](examples/tasks/mock.json)):
+Create a task manifest to use File publisher plugin (see [exemplary task manifest](examples/tasks/mock-passthru-file.json)):
 ```json
 {
     "version": 1,
@@ -212,7 +212,7 @@ Create a task manifest to use File publisher plugin (see [exemplary task manifes
 
 Create a task:
 ```
-$ $SNAP_PATH/bin/snapctl task create -t examples/tasks/mock.json
+$ $SNAP_PATH/bin/snapctl task create -t examples/tasks/mock-passthru-file.json
 Using task manifest to create task
 Task created
 ID: 02dd7ff4-8106-47e9-8b86-70067cd0a850
