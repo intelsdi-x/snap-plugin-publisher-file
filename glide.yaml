@@ -1,0 +1,16 @@
+package: github.com/intelsdi-x/snap-plugin-publisher-file
+import:
+- package: github.com/intelsdi-x/snap
+  version: ^0.15.0-beta
+  subpackages:
+  - control/plugin
+  - control/plugin/cpolicy
+  - core
+  - core/ctypes
+- package: google.golang.org/grpc
+  version: 88aeffff979aa77aa502cb011423d0a08fa12c5a
+testImport:
+- package: github.com/smartystreets/goconvey
+  version: ^1.6.2
+  subpackages:
+  - convey
