@@ -13,13 +13,7 @@
         /intel/psutil/vm/available: {}
         /intel/psutil/vm/free: {}
         /intel/psutil/vm/used: {}
-      config:
-      process:
-        -
-          plugin_name: "passthru"
-          process: null
-          publish:
-            -
-              plugin_name: "file"
-              config:
-                file: "/tmp/snap_published_file.json"
+      publish:
+        - plugin_name: "file"
+          config:
+            file: "/tmp/psutil.log"
