@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 set -e
 set -u
@@ -12,29 +12,26 @@ __proj_name="$(basename $__proj_dir)"
 
 # NOTE: these variables control the docker-compose image.
 export PLUGIN_SRC="${__proj_dir}"
-export LOG_LEVEL="${LOG_LEVEL:-"7"}"
 export PROJECT_NAME="${__proj_name}"
 
 TEST_TYPE="${TEST_TYPE:-"large"}"
 
-docker_folder="${__proj_dir}/examples/tasks"
+scripts_folder="${__proj_dir}/scripts"
 
-_docker_project () {
-  (cd "${docker_folder}" && "$@")
+_spec() {
+  (cd "${scripts_folder}" && "$@")
 }
 
-_info "docker folder : $docker_folder"
+_info "spec folder : $scripts_folder"
 
-_debug "running docker compose images"
-_docker_project docker-compose up -d 
+[[ -f "${__proj_dir}/build/linux/x86_64/snap-plugin-publisher-file" ]] || (cd "${__proj_dir}" && make)
+
+# NOTE: we need to copy the file because how docker build works
+cp "${__proj_dir}/build/linux/x86_64/snap-plugin-publisher-file" "${__proj_dir}/examples/snap-plugin-publisher-file"
+
+[[ -d "${scripts_folder}/.bundle" ]] || _spec bundle install
+
 _debug "running test: ${TEST_TYPE}"
+_spec bundle exec rspec ./spec/task_spec.rb
 
-set +e
-_docker_project docker-compose exec main bash -c "export LOG_LEVEL=$LOG_LEVEL; /${__proj_name}/scripts/large_tests.sh" 
-test_res=$?
-set -e
-echo "exit code from large_compose $test_res"
-_debug "stopping and removing containers"
-_docker_project docker-compose down
-
-exit $test_res
+rm "${__proj_dir}/examples/snap-plugin-publisher-file"
