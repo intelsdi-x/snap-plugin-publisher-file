@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-file.svg?branch=master)](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-file)
 
-# snap publisher plugin - File
+# Snap publisher plugin - File
 
 This plugin supports pushing metrics into a local file
 
-It's used in the [snap framework](http://github.com/intelsdi-x/snap).
+It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 1. [Getting Started](#getting-started)
   * [System Requirements](#system-requirements)
@@ -22,15 +22,16 @@ It's used in the [snap framework](http://github.com/intelsdi-x/snap).
 
 ### System Requirements
 
-* [golang 1.5+](https://golang.org/dl/) (needed only for building)
+* [golang 1.6+](https://golang.org/dl/) (needed only for building)
 
 ### Installation
 
 #### Download File plugin binary:
-You can get the pre-built binaries for your OS and architecture at snap's [GitHub Releases](https://github.com/intelsdi-x/snap/releases) page.
+You can get the pre-built binaries for your OS and architecture at plugin's [GitHub Releases](https://github.com/intelsdi-x/snap-plugin-publisher-file/releases) page.
 
 #### To build the plugin binary:
 Fork https://github.com/intelsdi-x/snap-plugin-publisher-file
+
 Clone repo into `$GOPATH/src/github.com/intelsdi-x/`:
 
 ```
@@ -41,12 +42,10 @@ Build the plugin by running make within the cloned repo:
 ```
 $ make
 ```
-This builds the plugin in `./build/rootfs/`
+This builds the plugin in `./build`
 
 ### Configuration and Usage
 * Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
-* Ensure `$SNAP_PATH` is exported  
-`export SNAP_PATH=$GOPATH/src/github.com/intelsdi-x/snap/build`
 
 ## Documentation
 To use this plugin you have to specify a config with the location of the file you want to write to.
@@ -54,12 +53,12 @@ To use this plugin you have to specify a config with the location of the file yo
 ```
 # JSON
 "config": {
-    "file": "/tmp/snap_published_mock_file.json"
+    "file": "/tmp/snap_published_file.json"
 }
 
 # YAML
 config: 
-    file: "/tmp/snap_published_mock_file.json"
+    file: "/tmp/snap_published_file.json"
 
 ```
 
@@ -115,121 +114,82 @@ The plugin will write out all metrics serialized as JSON to the specified file. 
 ```
 
 ### Examples
-See full task manifests using the mock and psutil plugins which are available in [examples/tasks](examples/tasks)  
+
+Example of running [psutil collector plugin](https://github.com/intelsdi-x/snap-plugin-collector-psutil), [movingaverage processor plugin](https://github.com/intelsdi-x/snap-plugin-processor-movingaverage), and writing data as a JSON to file:
+
+Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
+
+Ensure [snap daemon is running](https://github.com/intelsdi-x/snap#running-snap):
+* initd: `service snap-telemetry start`
+* systemd: `systemctl start snap-telemetry`
+* command line: `sudo snapd -l 1 -t 0 &`
 
 
-Example of running mock collector plugin, passthru processor plugin, and writing data as a JSON to file:
-
-Make sure that your `$SNAP_PATH` is set, if not:
+Download and load Snap plugins:
 ```
-$ export SNAP_PATH=<snapDirectoryPath>/build
-```
-In one terminal window, open the snap daemon (in this case with logging set to 1 and trust disabled):
-```
-$ $SNAP_PATH/bin/snapd -l 1 -t 0
-```
-In another terminal window:  
-Load snap-plugin-publisher-file plugin:
-```
-$ $SNAP_PATH/bin/snapctl plugin load build/rootfs/snap-plugin-publisher-file
-
-Plugin loaded
-Name: file
-Version: 2
-Type: publisher
-Signed: false
-Loaded Time: Mon, 25 Jul 2016 12:30:25 CEST
-```
-Load snap-plugin-processor-passthru plugin:
-```
-$ $SNAP_PATH/bin/snapctl plugin load $SNAP_PATH/plugin/snap-plugin-processor-passthru
-
-Plugin loaded
-Name: passthru
-Version: 1
-Type: processor
-Signed: false
-Loaded Time: Mon, 25 Jul 2016 12:33:00 CEST
+$ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-publisher-file/latest/linux/x86_64/snap-plugin-publisher-file
+$ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-processor-movingaverage/latest/linux/x86_64/snap-plugin-processor-movingaverage
+$ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-collector-psutil/latest/linux/x86_64/snap-plugin-collector-psutil
+$ snapctl plugin load snap-plugin-publisher-file
+$ snapctl plugin load snap-plugin-processor-movingaverage
+$ snapctl plugin load snap-plugin-collector-psutil
 ```
 
-Load snap-plugin-collector-mock2 plugin:
-```
-$ $SNAP_PATH/bin/snapctl plugin load $SNAP_PATH/plugin/snap-plugin-collector-mock2
-
-Plugin loaded
-Name: mock
-Version: 2
-Type: collector
-Signed: false
-Loaded Time: Mon, 25 Jul 2016 12:32:09 CEST
-```
-
-See available metrics for your system:
-```
-$ $SNAP_PATH/bin/snapctl metric list
-```
-
-Create a task manifest to use File publisher plugin (see [exemplary task manifest](examples/tasks/mock-passthru-file.json)):
+Create a [task manifest](https://github.com/intelsdi-x/snap/blob/master/docs/TASKS.md) (see [exemplary tasks](examples/tasks/)),
+for example `psutil-movingaverage-file.json` with following content:
 ```json
 {
-    "version": 1,
-    "schedule": {
-        "type": "simple",
-        "interval": "1s"
-    },
-    "max-failures": 10,
-    "workflow": {
-        "collect": {
-            "metrics": {
-                "/intel/mock/foo": {},
-                "/intel/mock/bar": {},
-                "/intel/mock/*/baz": {}
-            },
-            "config": {
-                "/intel/mock": {
-                    "name": "root",
-                    "password": "secret"
-                }
-            },
-            "process": [
-                {
-                    "plugin_name": "passthru",                    
-                    "process": null,
-                    "publish": [
-                        {
-                            "plugin_name": "file",                            
-                            "config": {
-                                "file": "/tmp/snap_published_mock_file.json"
-                            }
-                        }
-                    ]
-                }
-            ]
+  "version": 1,
+  "schedule": {
+    "type": "simple",
+    "interval": "1s"
+  },
+  "max-failures": 10,
+  "workflow": {
+    "collect": {
+      "metrics": {
+        "/intel/psutil/load/load1": {},
+        "/intel/psutil/load/load15": {},
+        "/intel/psutil/load/load5": {},
+        "/intel/psutil/vm/available": {},
+        "/intel/psutil/vm/free": {},
+        "/intel/psutil/vm/used": {}
+      },
+      "process": [
+        {
+          "plugin_name": "movingaverage",
+          "config": {
+            "MovingAvgBufLength": 5
+          }
         }
+      ],
+      "publish": [
+        {
+          "plugin_name": "file",
+          "config": {
+            "file": "/tmp/snap-psutil-movingaverage-file.log"
+          }
+        }
+      ]
     }
+  }
 }
+
 ```
 
 Create a task:
 ```
-$ $SNAP_PATH/bin/snapctl task create -t examples/tasks/mock-passthru-file.json
-Using task manifest to create task
-Task created
-ID: 02dd7ff4-8106-47e9-8b86-70067cd0a850
-Name: Task-02dd7ff4-8106-47e9-8b86-70067cd0a850
-State: Running
+$ snapctl task create -t psutil-movingaverage-file.json
 ```
 
 See JSON file containing the published data:
 ```
-tail -f /tmp/snap_published_mock_file.json
+$ tailf /tmp/snap-psutil-movingaverage-file.json
 ```
 
 To stop previously created task:
 ```
-$ $SNAP_PATH/bin/snapctl task stop 02dd7ff4-8106-47e9-8b86-70067cd0a850
-Task stopped:
-ID: 02dd7ff4-8106-47e9-8b86-70067cd0a850
+$ snapctl task stop <task_id>
 ```
 
 ### Roadmap
