@@ -122,7 +122,7 @@ Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/READM
 Ensure [snap daemon is running](https://github.com/intelsdi-x/snap#running-snap):
 * initd: `service snap-telemetry start`
 * systemd: `systemctl start snap-telemetry`
-* command line: `sudo snapd -l 1 -t 0 &`
+* command line: `sudo snapteld -l 1 -t 0 &`
 
 
 Download and load Snap plugins:
@@ -130,9 +130,9 @@ Download and load Snap plugins:
 $ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-publisher-file/latest/linux/x86_64/snap-plugin-publisher-file
 $ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-processor-movingaverage/latest/linux/x86_64/snap-plugin-processor-movingaverage
 $ wget http://snap.ci.snap-telemetry.io/plugins/snap-plugin-collector-psutil/latest/linux/x86_64/snap-plugin-collector-psutil
-$ snapctl plugin load snap-plugin-publisher-file
-$ snapctl plugin load snap-plugin-processor-movingaverage
-$ snapctl plugin load snap-plugin-collector-psutil
+$ snaptel plugin load snap-plugin-publisher-file
+$ snaptel plugin load snap-plugin-processor-movingaverage
+$ snaptel plugin load snap-plugin-collector-psutil
 ```
 
 Create a [task manifest](https://github.com/intelsdi-x/snap/blob/master/docs/TASKS.md) (see [exemplary tasks](examples/tasks/)),
@@ -179,7 +179,7 @@ for example `psutil-movingaverage-file.json` with following content:
 
 Create a task:
 ```
-$ snapctl task create -t psutil-movingaverage-file.json
+$ snaptel task create -t psutil-movingaverage-file.json
 ```
 
 See JSON file containing the published data:
@@ -189,7 +189,7 @@ $ tailf /tmp/snap-psutil-movingaverage-file.json
 
 To stop previously created task:
 ```
-$ snapctl task stop <task_id>
+$ snaptel task stop <task_id>
 ```
 
 ### Roadmap
