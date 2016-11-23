@@ -5,7 +5,5 @@ license: Apache-2.0
 description: "Publishes metrics to a local file in json format."
 badge:
   - "[![Build Status](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-file.svg?branch=master)](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-file)"
-  - "[![Build Status](https://ci.snap-telemetry.io/job/snap-plugin-publisher-file-large-prb-k8s/badge/icon)](https://ci.snap-telemetry.io/job/snap-plugin-publisher-file-large-prb-k8s/)"
 ci:
   - https://travis-ci.org/intelsdi-x/snap-plugin-publisher-file
-  - https://ci.snap-telemetry.io/job/snap-plugin-publisher-file-large-prb-k8s/
