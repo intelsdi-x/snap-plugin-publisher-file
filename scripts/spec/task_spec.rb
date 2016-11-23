@@ -2,26 +2,26 @@ require 'spec_helper'
 
 describe docker_build(template: SnapUtils.examples/"Dockerfile.erb", log_level: :info) do
   describe docker_run(described_image, :env => {'SNAP_VERSION'=>ENV['SNAP_VERSION']}, :wait => 10) do
-    describe file("/opt/snap/bin/snapd"), :retry => 3, :retry_wait => 5 do
+    describe file("/opt/snap/sbin/snapteld"), :retry => 3, :retry_wait => 5 do
       it { should be_file }
       it { should be_executable }
     end
 
-    describe file("/opt/snap/bin/snapctl") do
+    describe file("/opt/snap/bin/snaptel") do
       it { should be_file }
       it { should be_executable }
     end
 
-    describe command("snapd --version") do
+    describe command("snapteld --version") do
       its(:exit_status) { should eq 0 }
       its(:stdout) { should contain /#{ENV['SNAP_VERSION']}/ }
     end if ENV['SNAP_VERSION'] =~ /^\d+.\d+.\d+$/
 
     # NOTE: using ip instead of localhost due a known issue with alpine:
     # https://github.com/gliderlabs/docker-alpine/issues/8
-    snapctl = "snapctl -u 'http://127.0.0.1:8181'"
+    snaptel = "snaptel -u 'http://127.0.0.1:8181'"
 
-    describe command("#{snapctl} plugin list"), :retry => 3, :retry_wait => 10 do
+    describe command("#{snaptel} plugin list"), :retry => 3, :retry_wait => 10 do
       its(:exit_status) { should eq 0 }
       its(:stdout) { should contain /psutil/ }
       its(:stdout) { should contain /file/ }
@@ -31,7 +31,7 @@ describe docker_build(template: SnapUtils.examples/"Dockerfile.erb", log_level: 
       context "Snap task #{t}" do
         task_id = nil
 
-        describe command("#{snapctl} task create -t /opt/snap/tasks/#{t}") do
+        describe command("#{snaptel} task create -t /opt/snap/tasks/#{t}") do
           its(:exit_status) { should eq 0 }
           its(:stdout) { should contain /Task created/ }
           it {
@@ -41,7 +41,7 @@ describe docker_build(template: SnapUtils.examples/"Dockerfile.erb", log_level: 
           }
         end
 
-        describe command("snapctl -u 'http://127.0.0.1:8181/' task list") do
+        describe command("snaptel -u 'http://127.0.0.1:8181/' task list") do
           its(:exit_status) { should eq 0 }
           its(:stdout) { should contain /Running/ }
         end
@@ -66,7 +66,7 @@ describe docker_build(template: SnapUtils.examples/"Dockerfile.erb", log_level: 
         # NOTE: can not use the normal describe command(...) since we need to access task_id
         describe "Stop task" do
           it {
-            c = command("#{snapctl} task stop #{task_id}")
+            c = command("#{snaptel} task stop #{task_id}")
             expect(c.exit_status).to eq 0
             expect(c.stdout).to match /Task stopped/
           }
@@ -74,7 +74,7 @@ describe docker_build(template: SnapUtils.examples/"Dockerfile.erb", log_level: 
 
         describe "Remove task" do
           it {
-            c = command("#{snapctl} task remove #{task_id}")
+            c = command("#{snaptel} task remove #{task_id}")
             expect(c.exit_status).to eq 0
             expect(c.stdout).to match /Task removed/
           }
