@@ -1,11 +1,11 @@
 # File managed by pluginsync
 sudo: true
-services:
-- docker
 language: go
 go:
 - 1.6.3
-- 1.7.1
+- 1.7.3
+services:
+  - docker
 env:
   global:
   - ORG_PATH=/home/travis/gopath/src/github.com/intelsdi-x
@@ -24,11 +24,9 @@ env:
   - SNAP_VERSION: latest
     SNAP_OS: centos7
     TEST_TYPE: large
-  - TEST_TYPE: build
+  - TEST_TYPE=build
 matrix:
   exclude:
-  - go: 1.6.3
-    env: TEST_TYPE=build
   - go: 1.6.3
     env: SNAP_VERSION=latest SNAP_OS=alpine TEST_TYPE=large
   - go: 1.6.3
@@ -37,6 +35,8 @@ matrix:
     env: SNAP_VERSION=latest SNAP_OS=xenial TEST_TYPE=large
   - go: 1.6.3
     env: SNAP_VERSION=latest SNAP_OS=centos7 TEST_TYPE=large
+  - go: 1.6.3
+    env: TEST_TYPE=build
 before_install:
 - "[[ -d $SNAP_PLUGIN_SOURCE ]] || mkdir -p $ORG_PATH && ln -s $TRAVIS_BUILD_DIR $SNAP_PLUGIN_SOURCE"
 install:
@@ -64,7 +64,7 @@ deploy:
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
     branch: master
-    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.1"
+    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.3"
 - provider: s3
   access_key_id: AKIAINMB43VSSPFZISAA
   secret_access_key:
@@ -78,7 +78,7 @@ deploy:
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
     tags: true
-    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.1"
+    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.3"
 - provider: releases
   api_key:
     secure: qgJ93IYfJUzPWlsuhvWxczl2H8yyXUsM5rJ6YrNaKUTtwy2bvXg65zEvunEPvs+VbkimlODf42BFyTcb0GqgTx8N13wk8m1K0VFGirDK0KjugQF2zAs61lV1mzkUnTWipVm4a23bPdTt5vncj2kf70RqXBQ3eK75ttnpin47R858H8rl++4JC/wd3vNPZYX2OzahlGmHrsWi1drRGvhngevMqckz2MyUBwCMxhiWFlQSAfCmcD61+zuQ+2RmHN0omJCf59SBiBv+7QaqoVgN2X5EA4HD5hu6J1HpUuMhkWViIbSGhUCqoaH3Cgj2HzWy9WFRW2B18vT+FV5NPgHDZlYwgCCBHBHzp+JImiU1SgLoQJMCwBL8KiOUul7ZjYJLZABFQ/Z/1xhZp5jcy6+CtODGm/xuxNGbo0OE8eMdEs5StVT1wD0EPNAW0c22veksOywr0fW2TITJUfAF+BThRZQF9WGo97+d/8/rSZmhfQe0nfk5L/8P/OSHQn+2b685j5V5CfVqIW7Kq35pDVnwwedyhsjDs+1udQTPjqyT5/PuBjHtB/Fc3xVlDnKrrxn5Igh0o0uCeyLzFkDyjIB2Bn9u7/vBw4QZ5lTKmTaC4TGcwrdpDYDFaxNB0WZFS59NkgitZLHrrqW4XJimvqg7dKatoN3wpzft/csdyNh5tqE=
@@ -89,4 +89,4 @@ deploy:
   on:
     repo: intelsdi-x/snap-plugin-publisher-file
     tags: true
-    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.1"
+    condition: $TEST_TYPE = "build" && $TRAVIS_GO_VERSION = "1.7.3"
