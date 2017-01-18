@@ -13,28 +13,28 @@ env:
   matrix:
   - TEST_TYPE: small
   - SNAP_VERSION: latest
-    SNAP_OS: alpine
+    OS: alpine
     TEST_TYPE: large
   - SNAP_VERSION: latest_build
-    SNAP_OS: alpine
+    OS: alpine
     TEST_TYPE: large
   - SNAP_VERSION: latest
-    SNAP_OS: xenial
+    OS: xenial
     TEST_TYPE: large
   - SNAP_VERSION: latest
-    SNAP_OS: centos7
+    OS: centos7
     TEST_TYPE: large
   - TEST_TYPE=build
 matrix:
   exclude:
   - go: 1.6.3
-    env: SNAP_VERSION=latest SNAP_OS=alpine TEST_TYPE=large
+    env: SNAP_VERSION=latest OS=alpine TEST_TYPE=large
   - go: 1.6.3
-    env: SNAP_VERSION=latest_build SNAP_OS=alpine TEST_TYPE=large
+    env: SNAP_VERSION=latest_build OS=alpine TEST_TYPE=large
   - go: 1.6.3
-    env: SNAP_VERSION=latest SNAP_OS=xenial TEST_TYPE=large
+    env: SNAP_VERSION=latest OS=xenial TEST_TYPE=large
   - go: 1.6.3
-    env: SNAP_VERSION=latest SNAP_OS=centos7 TEST_TYPE=large
+    env: SNAP_VERSION=latest OS=centos7 TEST_TYPE=large
   - go: 1.6.x
     env: TEST_TYPE=build
 before_install:
