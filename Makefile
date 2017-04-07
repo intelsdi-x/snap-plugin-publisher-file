@@ -31,6 +31,10 @@ test-medium:
 	bash -c "./scripts/test.sh medium"
 test-large:
 	bash -c "./scripts/test.sh large"
+test-all:
+	$(MAKE) test-small
+	$(MAKE) test-medium
+	$(MAKE) test-large
 check:
 	$(MAKE) test
 all:
