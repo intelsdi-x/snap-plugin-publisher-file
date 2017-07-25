@@ -60,16 +60,14 @@ func (f *filePublisher) Publish(mts []plugin.Metric, cfg plugin.Config) error {
 
 	destination, err := cfg.GetString("file")
 	if err != nil {
-		logger.Error("Unable to ")
 		return fmt.Errorf("%s: %s", err, "file")
 	}
 
-	logger.Infof("publishing %v metrics to %s", len(mts), destination)
+	logger.Infof("Publishing %v metrics to %s", len(mts), destination)
 	file, err := os.OpenFile(destination, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
-		logger.Printf("Error: %v", err)
-		return err
+		return fmt.Errorf("Error opening file: %v", err)
 	}
 	w := bufio.NewWriter(file)
 
