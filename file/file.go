@@ -21,8 +21,6 @@ package file
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -30,15 +28,12 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/intelsdi-x/snap/control/plugin"
-	"github.com/intelsdi-x/snap/control/plugin/cpolicy"
-	"github.com/intelsdi-x/snap/core/ctypes"
+	"github.com/intelsdi-x/snap-plugin-lib-go/v1/plugin"
 )
 
 const (
-	PluginName    = "file"
-	PluginVersion = 2
-	PluginType    = plugin.PublisherPluginType
+	Name    = "file"
+	Version = 3
 )
 
 type filePublisher struct {
@@ -51,34 +46,26 @@ type MetricToPublish struct {
 	Data      interface{}       `json:"data"`
 	Unit      string            `json:"unit"`
 	Tags      map[string]string `json:"tags"`
-	Version_  int               `json:"version"`
-	// Last advertised time is the last time the snap agent was told about a metric.
-	LastAdvertisedTime time.Time `json:"last_advertised_time"`
+	Version   int64             `json:"version"`
 }
 
-//NewFilePublisher returns an instance of filePublisher
-func NewFilePublisher() *filePublisher {
+//New returns an instance of filePublisher
+func New() *filePublisher {
 	return &filePublisher{}
 }
 
-func (f *filePublisher) Publish(contentType string, content []byte, config map[string]ctypes.ConfigValue) error {
+func (f *filePublisher) Publish(mts []plugin.Metric, cfg plugin.Config) error {
 	logger := log.New()
-	logger.Println("Publishing started")
-	var mts []plugin.MetricType
+	logger.Debug("Publishing started")
 
-	switch contentType {
-	case plugin.SnapGOBContentType:
-		dec := gob.NewDecoder(bytes.NewBuffer(content))
-		if err := dec.Decode(&mts); err != nil {
-			logger.Printf("Error decoding: error=%v content=%v", err, content)
-			return fmt.Errorf("Error decoding %v", err)
-		}
-	default:
-		return fmt.Errorf("Unknown content type '%s'", contentType)
+	destination, err := cfg.GetString("file")
+	if err != nil {
+		logger.Error("Unable to ")
+		return fmt.Errorf("%s: %s", err, "file")
 	}
 
-	logger.Printf("publishing %v metrics to %v", len(mts), config)
-	file, err := os.OpenFile(config["file"].(ctypes.ConfigValueStr).Value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	logger.Infof("publishing %v metrics to %s", len(mts), destination)
+	file, err := os.OpenFile(destination, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
 		logger.Printf("Error: %v", err)
@@ -100,44 +87,25 @@ func (f *filePublisher) Publish(contentType string, content []byte, config map[s
 	return nil
 }
 
-//Meta returns metadata about the plugin
-func Meta() *plugin.PluginMeta {
-	return plugin.NewPluginMeta(PluginName, PluginVersion, PluginType, []string{plugin.SnapGOBContentType}, []string{plugin.SnapGOBContentType})
-}
-
-func (f *filePublisher) GetConfigPolicy() (*cpolicy.ConfigPolicy, error) {
-	cp := cpolicy.New()
-	config := cpolicy.NewPolicyNode()
-
-	r1, err := cpolicy.NewStringRule("file", true)
-	handleErr(err)
-	r1.Description = "Absolute path to the output file for publishing"
-
-	config.Add(r1)
-	cp.Add([]string{""}, config)
-	return cp, nil
+func (f *filePublisher) GetConfigPolicy() (plugin.ConfigPolicy, error) {
+	policy := plugin.NewConfigPolicy()
+	policy.AddNewStringRule([]string{""}, "file", true)
+	return *policy, nil
 }
 
 // formatMetricTypes returns metrics in format to be publish as a JSON based on incoming metrics types;
 // i.a. namespace is formatted as a single string
-func formatMetricTypes(mts []plugin.MetricType) []MetricToPublish {
+func formatMetricTypes(mts []plugin.Metric) []MetricToPublish {
 	var metrics []MetricToPublish
 	for _, mt := range mts {
 		metrics = append(metrics, MetricToPublish{
-			Timestamp:          mt.Timestamp(),
-			Namespace:          mt.Namespace().String(),
-			Data:               mt.Data(),
-			Unit:               mt.Unit(),
-			Tags:               mt.Tags(),
-			Version_:           mt.Version(),
-			LastAdvertisedTime: mt.LastAdvertisedTime(),
+			Timestamp: mt.Timestamp,
+			Namespace: mt.Namespace.String(),
+			Data:      mt.Data,
+			Unit:      mt.Unit,
+			Tags:      mt.Tags,
+			Version:   mt.Version,
 		})
 	}
 	return metrics
-}
-
-func handleErr(e error) {
-	if e != nil {
-		panic(e)
-	}
 }
