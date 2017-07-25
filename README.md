@@ -22,7 +22,7 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 ### System Requirements
 
-* [golang 1.6+](https://golang.org/dl/) (needed only for building)
+* [golang 1.7+](https://golang.org/dl/) (needed only for building)
 
 ### Installation
 
