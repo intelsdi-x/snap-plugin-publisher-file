@@ -65,7 +65,7 @@ func TestFilePublisher(t *testing.T) {
 		})
 
 		Convey("Publish content to file", func() {
-			config := plugin.NewConfig()
+			config := plugin.Config{}
 			config["file"] = "/tmp/pub.out"
 			err := fp.Publish(mockMts, config)
 			So(err, ShouldBeNil)
