@@ -63,7 +63,7 @@ func (f *filePublisher) Publish(mts []plugin.Metric, cfg plugin.Config) error {
 		return fmt.Errorf("%s: %s", err, "file")
 	}
 
-	logger.Infof("Publishing %v metrics to %s", len(mts), destination)
+	logger.Debugf("Publishing %v metrics to %s", len(mts), destination)
 	file, err := os.OpenFile(destination, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
