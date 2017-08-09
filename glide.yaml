@@ -1,12 +1,10 @@
 package: github.com/intelsdi-x/snap-plugin-publisher-file
 import:
-- package: github.com/intelsdi-x/snap
-  version: ^1.0.0
+- package: github.com/Sirupsen/logrus
+  version: ^1.0.2
+- package: github.com/intelsdi-x/snap-plugin-lib-go
   subpackages:
-  - control/plugin
-  - control/plugin/cpolicy
-  - core
-  - core/ctypes
+  - v1/plugin
 testImport:
 - package: github.com/smartystreets/goconvey
   version: ^1.6.2
